@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ITRC · Oficinas · ¿Dónde va este residuo?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c2b22;
+    --paper:#f1efe4;
+    --paper-card:#fbfaf4;
+    --line:#d8d4c2;
+    --bin-white:#fbfbf7;
+    --bin-white-ring:#1c2b22;
+    --bin-black:#20231f;
+    --bin-black-ring:#e8b339;
+    --bin-green:#2f6b3f;
+    --bin-green-ring:#8fd18c;
+    --accent:#e8b339;
+    --alert:#a8412f;
+    --alert-soft:#f3ddd3;
+    --radius:14px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+
+  .app{
+    max-width:480px;
+    margin:0 auto;
+    padding:28px 18px 56px;
+  }
+
+  @media (min-width:600px){
+    .app{max-width:560px; padding:40px 24px 64px;}
+  }
+
+  /* ---------- Header ---------- */
+  .hero{
+    margin-bottom:24px;
+    animation:fadeUp .5s ease both;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--bin-green);
+    margin:0 0 10px;
+  }
+  .hero h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:clamp(28px,7vw,36px);
+    line-height:1.08;
+    margin:0 0 10px;
+    letter-spacing:-0.01em;
+  }
+  .hero p{
+    margin:0;
+    font-size:15px;
+    line-height:1.5;
+    color:#43503f;
+    max-width:38ch;
+  }
+
+  /* ---------- Finder ---------- */
+  .finder{margin-bottom:14px;}
+  .chips{display:flex; flex-wrap:wrap; gap:6px;}
+  .chip{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    padding:7px 11px;
+    border-radius:20px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:#4a5544;
+    cursor:pointer;
+    transition:background .2s, color .2s, border-color .2s;
+  }
+  .chip:hover{border-color:var(--bin-green);}
+  .chip.is-on{
+    background:var(--bin-green);
+    border-color:var(--bin-green);
+    color:#fff;
+  }
+
+  /* ---------- Results grid ---------- */
+  .results{
+    margin-top:8px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+  }
+  @media (min-width:520px){
+    .results{grid-template-columns:repeat(3,1fr);}
+  }
+  .row{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:9px;
+    background:var(--paper-card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:20px 8px 14px;
+    cursor:pointer;
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:128px;
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .row:hover, .row:focus-visible{
+    transform:translateY(-2px);
+    border-color:var(--bin-green);
+    box-shadow:0 6px 14px -8px rgba(0,0,0,.2);
+  }
+  .row:focus-visible{outline:2px solid var(--bin-green); outline-offset:2px;}
+  .row__icon{font-size:58px; line-height:1;}
+  .row__name{
+    font-size:12.5px;
+    line-height:1.32;
+    color:var(--ink);
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .row__cat{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:#8b9282;
+  }
+  .empty{
+    grid-column:1 / -1;
+    padding:28px 4px;
+    text-align:center;
+    color:#6b7563;
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  /* ---------- Result detail ---------- */
+  .result{
+    margin-top:18px;
+    padding:20px;
+    border-radius:var(--radius);
+    border-left:5px solid var(--ink);
+    background:var(--paper-card);
+    animation:fadeUp .35s ease both;
+  }
+  .result__icon{
+    font-size:48px;
+    line-height:1;
+    display:block;
+    margin-bottom:8px;
+  }
+  .result__tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    margin:0 0 8px;
+    color:#4a5544;
+  }
+  .result__tag strong{color:var(--ink);}
+  .result__name{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:21px;
+    margin:0 0 10px;
+    line-height:1.2;
+  }
+  .result__tip{font-size:14.5px; line-height:1.55; margin:0 0 16px; color:#3a4536;}
+  .reset-btn{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:500;
+    font-size:14px;
+    padding:10px 16px;
+    border-radius:8px;
+    border:1.5px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    cursor:pointer;
+    transition:background .2s, color .2s;
+  }
+  .reset-btn:hover{background:var(--ink); color:#fff;}
+
+  .result--blanca{border-left-color:var(--bin-white-ring);}
+  .result--negra{border-left-color:var(--bin-black);}
+  .result--verde{border-left-color:var(--bin-green);}
+  .result--especial{border-left-color:var(--alert); background:var(--alert-soft);}
+  .result--especial .result__tag, .result--especial .result__tag strong{color:var(--alert);}
+  .result--especial .result__tip{color:#5c2c20;}
+  .result--especial .reset-btn{border-color:var(--alert); color:var(--alert);}
+  .result--especial .reset-btn:hover{background:var(--alert); color:#fff;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    margin-top:34px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    font-size:12.5px;
+    line-height:1.5;
+    color:#74806c;
+  }
+
+  .sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);}
+
+  @keyframes fadeUp{
+    from{opacity:0; transform:translateY(8px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:0.001s !important; transition-duration:0.001s !important;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="hero">
+    <p class="eyebrow">Agencia ITRC · Oficinas</p>
+    <h1>¿Qué vas a botar?</h1>
+    <p>Toca el residuo en la lista, o filtra por categoría. Te decimos al instante en qué caneca va y por qué.</p>
+  </header>
+
+  <section class="finder">
+    <div class="chips" id="chips"></div>
+  </section>
+
+  <section class="results" id="results"></section>
+
+  <div id="resultDetail" aria-live="polite"></div>
+
+  <footer>
+    ¿No encuentras tu residuo o tienes dudas? Pregúntale al equipo de gestión ambiental de la Agencia ITRC.
+  </footer>
+</div>
+
+<script>
+const CAT_LABELS = {
+  papel: 'Papel y cartón',
+  plastico: 'Plástico',
+  vidrio_metal: 'Vidrio y metal',
+  organico: 'Orgánicos y comida',
+  higiene: 'Higiene y aseo',
+  especial: 'Especiales y peligrosos'
+};
+const CAT_ORDER = ['papel','plastico','vidrio_metal','organico','higiene','especial'];
+
+const BIN_LABEL = {
+  blanca: 'BLANCA · APROVECHABLES',
+  negra: 'NEGRA · NO APROVECHABLES',
+  verde: 'VERDE · ORGÁNICOS'
+};
+
+const RESIDUOS = [
+  {id:'cascara-fruta', name:'Cáscaras de frutas', icon:'🍌', keywords:['cascara','fruta'], category:'organico', bin:'verde', tip:'Va en la verde: sepárala sin bolsa plástica para facilitar el compostaje.'},
+  {id:'te', name:'Bolsitas de té usadas', icon:'🍵', keywords:['te','bolsita','infusion'], category:'organico', bin:'verde', tip:'Va en la verde: revisa que la bolsita no tenga grapas metálicas.'},
+  {id:'papel-oficina', name:'Papel de oficina y hojas impresas', icon:'📄', keywords:['papel','hoja','impresion','oficina'], category:'papel', bin:'blanca', tip:'⚠️ Por favor deposítalo en las cajas para papel impreso disponibles en la Agencia, no en la caneca.'},
+  {id:'carton', name:'Cajas y cartón', icon:'📦', keywords:['carton','caja','empaque'], category:'papel', bin:'blanca', tip:'Va en la blanca: aplánalas para que ocupen menos espacio y retira cinta o icopor si tienen.'},
+  {id:'vidrio', name:'Frasco o botella de vidrio limpio', icon:'🫙', keywords:['vidrio','frasco','botella'], category:'vidrio_metal', bin:'blanca', tip:'Va en la blanca: retira la tapa y enjuágalo bien antes de botarlo.'},
+  {id:'botella-pet', name:'Botella plástica (PET) vacía', icon:'<svg viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg" width="34" height="40"><rect x="9" y="1" width="6" height="3" rx="1" stroke="var(--ink)" stroke-width="1.4"/><polygon points="7,8 9,4.3 15,4.3 17,8" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/><rect x="7" y="8" width="10" height="18" rx="3" stroke="var(--ink)" stroke-width="1.4"/><line x1="7.6" y1="15" x2="16.4" y2="15" stroke="var(--ink)" stroke-width="1.2"/></svg>', keywords:['botella','pet','plastico','gaseosa','agua'], category:'plastico', bin:'blanca', tip:'Va en la blanca: vacíala y enjuágala antes de botarla.'},
+  {id:'bolsa-plastica-limpia', name:'Bolsa plástica limpia y seca', icon:'🛍️', keywords:['bolsa','plastico'], category:'plastico', bin:'blanca', tip:'Va en la blanca: agrúpalas dentro de otra bolsa para que no se dispersen.'},
+  {id:'tetrapak', name:'Envase de tetrapak (jugo)', icon:'🧃', keywords:['tetrapak','jugo','carton laminado'], category:'plastico', bin:'blanca', tip:'Va en la blanca: enjuágalo y aplánalo antes de botarlo.'},
+  {id:'tapas-plasticas', name:'Tapas plásticas', icon:'🔘', keywords:['tapa','tapas','plastico'], category:'plastico', bin:'blanca', tip:'⚠️ Ponla en la caneca de tapas plásticas de la Agencia, no en la caneca blanca regular. ¡Las tapas tienen su punto especial de recolección!'},
+  {id:'papel-metalizado', name:'Envoltura metalizada (dulces, galletas, paquetes, etc.)', icon:'🍫', keywords:['envoltura','dulce','snack','metalizado','papas','galletas','paquete','chocolate'], category:'plastico', bin:'negra', tip:'Va en la negra: mezcla materiales que no se pueden separar para reciclar.'},
+  {id:'vaso-carton-cafe', name:'Vaso de cartón plastificado (café)', icon:'☕', keywords:['vaso','cafe','tinto','carton','plastificado'], category:'plastico', bin:'negra', tip:'Va en la negra: aunque parece de cartón, tiene una capa de plástico pegada al papel que no se puede separar en el reciclaje.'},
+  {id:'chicle', name:'Chicle', icon:'🍬', keywords:['chicle','goma'], category:'higiene', bin:'negra', tip:'Va en la negra: envuélvelo en un papel pequeño antes de botarlo.'},
+];
+
+const presentCats = CAT_ORDER.filter(id => RESIDUOS.some(item => item.category === id));
+const CATS = [{id:'todos', label:'Todos'}, ...presentCats.map(id => ({id, label:CAT_LABELS[id]}))];
+const CAT_LABEL = Object.fromEntries(CATS.map(c => [c.id, c.label]));
+
+let activeCat = 'todos';
+
+const chipsEl = document.getElementById('chips');
+const resultsEl = document.getElementById('results');
+const detailEl = document.getElementById('resultDetail');
+
+CATS.forEach(cat => {
+  const btn = document.createElement('button');
+  btn.className = 'chip' + (cat.id === 'todos' ? ' is-on' : '');
+  btn.textContent = cat.label;
+  btn.dataset.cat = cat.id;
+  btn.addEventListener('click', () => {
+    activeCat = cat.id;
+    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('is-on', c.dataset.cat === cat.id));
+    renderList();
+  });
+  chipsEl.appendChild(btn);
+});
+
+function renderList(){
+  const filtered = RESIDUOS
+    .filter(item => activeCat === 'todos' || item.category === activeCat)
+    .sort((a,b) => a.name.localeCompare(b.name, 'es'));
+
+  resultsEl.innerHTML = '';
+
+  if(filtered.length === 0){
+    const empty = document.createElement('p');
+    empty.className = 'empty';
+    empty.textContent = 'No hay residuos en esta categoría todavía.';
+    resultsEl.appendChild(empty);
+    return;
+  }
+
+  filtered.forEach(item => {
+    const row = document.createElement('button');
+    row.className = 'row';
+    row.innerHTML = `<span class="row__icon" aria-hidden="true">${item.icon}</span><span class="row__name">${item.name}</span><span class="row__cat">${CAT_LABEL[item.category]}</span>`;
+    row.addEventListener('click', () => selectItem(item));
+    resultsEl.appendChild(row);
+  });
+}
+
+function selectItem(item){
+  let html = '';
+  if(item.bin === 'especial'){
+    html = `
+      <div class="result result--especial" tabindex="-1">
+        <span class="result__icon" aria-hidden="true">${item.icon}</span>
+        <p class="result__tag">NO VA EN LAS CANECAS DE COLOR</p>
+        <h2 class="result__name">${item.name}</h2>
+        <p class="result__tip">${item.tip}</p>
+        <button class="reset-btn" id="resetBtn">Elegir otro residuo</button>
+      </div>`;
+  } else {
+    html = `
+      <div class="result result--${item.bin}" tabindex="-1">
+        <span class="result__icon" aria-hidden="true">${item.icon}</span>
+        <p class="result__tag">VA EN LA CANECA <strong>${BIN_LABEL[item.bin]}</strong></p>
+        <h2 class="result__name">${item.name}</h2>
+        <p class="result__tip">${item.tip}</p>
+        <button class="reset-btn" id="resetBtn">Elegir otro residuo</button>
+      </div>`;
+  }
+  detailEl.innerHTML = html;
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  detailEl.scrollIntoView({behavior: prefersReduced ? 'auto' : 'smooth', block:'center'});
+  document.getElementById('resetBtn').addEventListener('click', resetAll);
+}
+
+function resetAll(){
+  activeCat = 'todos';
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('is-on', c.dataset.cat === 'todos'));
+  detailEl.innerHTML = '';
+  renderList();
+}
+
+renderList();
+</script>
+</body>
+</html>
